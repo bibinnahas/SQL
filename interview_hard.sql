@@ -2,10 +2,10 @@ select
    c.contest_id,
    c.hacker_id,
    c.name,
-   vvs.tv,
-   vvs.tuv,
-   sss.ts,
-   sss.tas 
+   coalesce(sss.ts, 0),
+   coalesce(sss.tas, 0),
+   coalesce(vvs.tv, 0),
+   coalesce(vvs.tuv, 0) 
 from
    contests c 
    left join
@@ -23,7 +23,7 @@ from
                colleges co 
                on co.college_id = ch.college_id 
          group by
-            co.contest_id
+            co.contest_id 
       )
       vvs 
       on vvs.contest_id = c.contest_id 
@@ -37,12 +37,17 @@ from
             submission_stats ss 
             left join
                challenges ch 
-               on vs.challenge_id = ch.challenge_id 
+               on ss.challenge_id = ch.challenge_id 
             left join
                colleges co 
                on co.college_id = ch.college_id 
          group by
-            co.contest_id
+            co.contest_id 
       )
       sss 
-      on vvs.contest_id = sss.contest_id
+      on vvs.contest_id = sss.contest_id 
+where
+   vvs.tv > 0 
+   OR vvs.tuv > 0 
+   OR sss.ts > 0 
+   OR sss.tas > 0
