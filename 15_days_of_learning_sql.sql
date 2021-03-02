@@ -6,12 +6,18 @@
        h.NAME,
        Row_number()
          OVER(
-           ORDER BY s.submission_date)     [row_number]
+           partition BY s.submission_date
+           ORDER BY s.submission_date) as row_numb
 FROM   submissions s
        LEFT JOIN hackers h
               ON h.hacker_id = s.hacker_id
 WHERE  s.submission_date = '2016-03-01'
+        OR s.submission_date = '2016-03-02'
+        AND row_numb = 1
 GROUP  BY s.submission_date,
           h.hacker_id,
           h.NAME
-ORDER  BY 3  
+ORDER  BY 1,
+          3,
+          5  
+
