@@ -1,3 +1,4 @@
+
  SELECT s.submission_date,
        Count(s.submission_date)
          OVER (
@@ -13,7 +14,6 @@ FROM   submissions s
               ON h.hacker_id = s.hacker_id
 WHERE  s.submission_date = '2016-03-01'
         OR s.submission_date = '2016-03-02'
-        AND row_numb = 1
 GROUP  BY s.submission_date,
           h.hacker_id,
           h.NAME
