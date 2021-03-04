@@ -1,26 +1,17 @@
- SELECT a.submission_date,
-       a.running_count,
-       a.hacker_id,
-       a.NAME
-FROM   (SELECT s.submission_date,
-               Count(s.submission_date)
-                 OVER (
-                   partition BY s.submission_date) AS running_count,
-               h.hacker_id,
-               h.NAME,
-               Row_number()
-                 OVER(
-                   partition BY s.submission_date
-                   ORDER BY s.submission_date)     AS row_numb
-        FROM   submissions s
-               LEFT JOIN hackers h
-                      ON h.hacker_id = s.hacker_id
-        WHERE  s.submission_date = '2016-03-01'
-                OR s.submission_date = '2016-03-02'
-        GROUP  BY s.submission_date,
-                  h.hacker_id,
-                  h.NAME)a
-WHERE  a.row_numb = 1
-ORDER  BY 1,
-          2,
-          3  
+with sub1 as (SELECT s1.submission_date,
+                s1.hacker_id,
+                Count(DISTINCT s1.submission_id)                    AS
+                   todays_submissions,
+                1
+                + Datediff(day, 'March 1,2016', s1.submission_date) AS
+                contest_day,
+                Count(DISTINCT s2.submission_date)                  AS
+                submission_days
+         FROM   submissions s1
+                JOIN submissions s2
+                  ON s1.hacker_id = s2.hacker_id
+                     AND s1.submission_date > s2.submission_date
+         GROUP  BY s1.submission_date,
+                   s1.hacker_id)
+-- select * from sub1 order by 1 ;
+select * from submissions where submission_date = '2016-03-06' and hacker_id = 84307;
